@@ -25,8 +25,6 @@ public class Server {
     public static void main(String[] args) throws IOException {
         loadPersistedOrSeed();
 
-        // Cloud hosts (Render, Railway, etc.) assign a port via $PORT.
-        // Falls back to 8080 for local runs.
         int port = 8080;
         String envPort = System.getenv("PORT");
         if (envPort != null && !envPort.isEmpty()) {
@@ -47,7 +45,6 @@ public class Server {
         System.out.println("Campus Placement Eligibility Checker running on port " + port);
     }
 
-    // ---------- Seed data so the app is usable immediately ----------
     static void loadSeedData() {
         addStudent(new Student(id(nextStudentId++, "S"), "Aditi Rao", 8.2, "CSE", 0, 0, 92, 88));
         addStudent(new Student(id(nextStudentId++, "S"), "Rohit Verma", 6.4, "ECE", 1, 0, 78, 74));
@@ -62,7 +59,6 @@ public class Server {
                 Company.parseBranches("CSE"), 0, 0, 85, 85));
     }
 
-    // ---------- persistence: data survives a server restart ----------
     static final String STUDENTS_FILE = "data/students_store.csv";
     static final String COMPANIES_FILE = "data/companies_store.csv";
 
@@ -141,7 +137,6 @@ public class Server {
         try {
             List<String> lines = new ArrayList<>();
             for (Company c : companies.values()) {
-                // "~" separates branches in the persisted file so commas stay the CSV delimiter
                 String branches = String.join("~", c.allowedBranches);
                 lines.add(String.join(",", c.id, c.name, String.valueOf(c.minCgpa), branches,
                         String.valueOf(c.maxBacklogs), String.valueOf(c.maxGapYears),
@@ -155,7 +150,6 @@ public class Server {
     static void addCompany(Company c) { companies.put(c.id, c); }
     static String id(int n, String prefix) { return prefix + n; }
 
-    // ---------- /api/students ----------
     static void handleStudents(HttpExchange ex) throws IOException {
         cors(ex);
         String method = ex.getRequestMethod();
@@ -187,7 +181,6 @@ public class Server {
         }
     }
 
-    // ---------- /api/companies ----------
     static void handleCompanies(HttpExchange ex) throws IOException {
         cors(ex);
         String method = ex.getRequestMethod();
@@ -219,8 +212,6 @@ public class Server {
         }
     }
 
-    // ---------- /api/import/students  (CSV body) ----------
-    // Expected columns: name,cgpa,branch,activeBacklogs,gapYears,tenthPercent,twelfthPercent
     static void handleImportStudents(HttpExchange ex) throws IOException {
         cors(ex);
         if (!ex.getRequestMethod().equals("POST")) {
@@ -231,7 +222,7 @@ public class Server {
         List<Student> added = new ArrayList<>();
         String[] lines = csv.split("\\r?\\n");
         int start = 0;
-        if (lines.length > 0 && lines[0].toLowerCase().contains("name")) start = 1; // skip header
+        if (lines.length > 0 && lines[0].toLowerCase().contains("name")) start = 1;
         for (int i = start; i < lines.length; i++) {
             String line = lines[i].trim();
             if (line.isEmpty()) continue;
@@ -257,9 +248,6 @@ public class Server {
         sendJson(ex, 201, json);
     }
 
-    // ---------- /api/login ----------
-    // NOTE: credentials are hardcoded here for simplicity. For anything beyond
-    // a personal/demo project, replace this with a real user store + hashed passwords.
     static final String ADMIN_USER = "admin";
     static final String ADMIN_PASS = "admin123";
 
@@ -280,7 +268,6 @@ public class Server {
         }
     }
 
-    // ---------- /api/check?studentId=&companyId= ----------
     static void handleCheckOne(HttpExchange ex) throws IOException {
         cors(ex);
         Map<String, String> qp = queryParams(ex);
@@ -294,7 +281,6 @@ public class Server {
         sendJson(ex, 200, r.toJson());
     }
 
-    // ---------- /api/check-all  -> full matrix ----------
     static void handleCheckAll(HttpExchange ex) throws IOException {
         cors(ex);
         List<String> results = new ArrayList<>();
@@ -306,7 +292,6 @@ public class Server {
         sendJson(ex, 200, "[" + String.join(",", results) + "]");
     }
 
-    // ---------- static file serving for the frontend ----------
     static void handleStatic(HttpExchange ex) throws IOException {
         String path = ex.getRequestURI().getPath();
         if (path.equals("/")) path = "/index.html";
@@ -325,7 +310,6 @@ public class Server {
         try (OutputStream os = ex.getResponseBody()) { os.write(bytes); }
     }
 
-    // ---------- helpers ----------
     static void cors(HttpExchange ex) {
         ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         ex.getResponseHeaders().set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
@@ -346,4 +330,18 @@ public class Server {
     }
 
     static Map<String, String> queryParams(HttpExchange ex) {
-        Map<String, String> result = new
+        Map<String, String> result = new HashMap<>();
+        String query = ex.getRequestURI().getRawQuery();
+        if (query == null) return result;
+        for (String pair : query.split("&")) {
+            int idx = pair.indexOf('=');
+            if (idx < 0) continue;
+            try {
+                String key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
+                String value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+                result.put(key, value);
+            } catch (Exception ignored) { }
+        }
+        return result;
+    }
+}

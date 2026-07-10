@@ -38,6 +38,7 @@ public class Server {
         server.createContext("/api/check-all", Server::handleCheckAll);
         server.createContext("/api/check", Server::handleCheckOne);
         server.createContext("/api/login", Server::handleLogin);
+        server.createContext("/api/dashboard-stats", Server::handleDashboardStats);
         server.createContext("/", Server::handleStatic);
 
         server.setExecutor(null);
@@ -70,6 +71,42 @@ public class Server {
             saveStudentsToDisk();
             saveCompaniesToDisk();
         }
+    }
+    static void handleDashboardStats(HttpExchange ex) throws IOException {
+        cors(ex);
+        if (!ex.getRequestMethod().equals("GET")) {
+            sendJson(ex, 405, "{\"error\":\"method not allowed\"}");
+            return;
+        }
+
+        int totalStudents = students.size();
+        int totalCompanies = companies.size();
+        
+        double avgCgpa = 0.0;
+        if (totalStudents > 0) {
+            double sum = 0;
+            for (Student s : students.values()) {
+                sum += s.cgpa;
+            }
+            avgCgpa = sum / totalStudents;
+        }
+
+        int totalEligible = 0;
+        for (Student s : students.values()) {
+            for (Company c : companies.values()) {
+                if (engine.evaluate(s, c).eligible) {
+                    totalEligible++;
+                }
+            }
+        }
+
+        String json = String.format(
+            "{\"totalStudents\":%d,\"totalCompanies\":%d,\"totalEligible\":%d,\"avgCgpa\":%.2f," +
+            "\"branchDistribution\":[],\"companyEligibleCounts\":[]}",
+            totalStudents, totalCompanies, totalEligible, avgCgpa
+        );
+
+        sendJson(ex, 200, json);
     }
 
     static boolean loadStudentsFromDisk() {

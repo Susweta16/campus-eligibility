@@ -1,3 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Placement Hub Login</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0b1020;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.card{
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    width:320px;
+    box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+
+h2{text-align:center;}
+
+input{
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+
+#msg{
+    color:red;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h2>Placement Hub Login</h2>
+
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p id="msg"></p>
+</div>
+
+<script>
 async function login() {
     const user = document.getElementById("username").value;
     const pass = document.getElementById("password").value;
@@ -22,3 +92,7 @@ async function login() {
             data.error || "Invalid username or password";
     }
 }
+</script>
+
+</body>
+</html>

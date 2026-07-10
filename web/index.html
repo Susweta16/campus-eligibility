@@ -4,14 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Placement Hub</title>
-<script>
-if(localStorage.getItem("loggedIn") !== "true"){
-    window.location.href = "login.html";
-}
-</script>
 <style>
   :root {
-    --bg: #0b0f19;
+    --bg: #f6f7fb;
     --sidebar: #10152a;
     --panel: #ffffff;
     --panel-2: #f6f7fb;
@@ -27,69 +22,41 @@ if(localStorage.getItem("loggedIn") !== "true"){
     --fail-bg: #fdecec;
     --radius: 14px;
   }
+  html[data-theme="dark"] {
+    --bg: #0d1117;
+    --panel: #161b26;
+    --panel-2: #1c2230;
+    --border: #2a3142;
+    --text: #e6e8f0;
+    --muted: #9aa2b8;
+    --ok-bg: #123320;
+    --fail-bg: #3a1616;
+  }
 
   * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    background: var(--panel-2);
-    color: var(--text);
-    font-family: -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
-  }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; transition: background 0.2s ease, color 0.2s ease; }
 
   .app { display: flex; min-height: 100vh; }
 
   /* ---------- Sidebar ---------- */
-  .sidebar {
-    width: 240px;
-    background: linear-gradient(180deg, var(--sidebar), #171d38);
-    color: #cfd3ea;
-    padding: 24px 16px;
-    position: fixed;
-    top: 0; bottom: 0; left: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .brand {
-    display: flex; align-items: center; gap: 10px;
-    padding: 4px 8px 24px;
-    font-weight: 700;
-    font-size: 17px;
-    color: #fff;
-  }
-  .brand .dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--indigo), var(--teal));
-    box-shadow: 0 0 0 4px rgba(91,91,246,0.18);
-  }
+  .sidebar { width: 240px; background: linear-gradient(180deg, var(--sidebar), #171d38); color: #cfd3ea; padding: 24px 16px; position: fixed; top: 0; bottom: 0; left: 0; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 24px; font-weight: 700; font-size: 17px; color: #fff; }
+  .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, var(--indigo), var(--teal)); box-shadow: 0 0 0 4px rgba(91,91,246,0.18); }
   .nav { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
-  .nav button {
-    all: unset;
-    cursor: pointer;
-    padding: 11px 14px;
-    border-radius: 10px;
-    font-size: 14px;
-    display: flex; align-items: center; gap: 10px;
-    color: #b7bcda;
-    transition: background 0.15s ease, color 0.15s ease;
-  }
+  .nav button { all: unset; cursor: pointer; padding: 11px 14px; border-radius: 10px; font-size: 14px; display: flex; align-items: center; gap: 10px; color: #b7bcda; transition: background 0.15s ease, color 0.15s ease; }
   .nav button:hover { background: rgba(255,255,255,0.06); color: #fff; }
-  .nav button.active {
-    background: linear-gradient(135deg, var(--indigo), #7b6bf0);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(91,91,246,0.35);
-  }
+  .nav button.active { background: linear-gradient(135deg, var(--indigo), #7b6bf0); color: #fff; box-shadow: 0 4px 14px rgba(91,91,246,0.35); }
   .nav .icon { font-size: 16px; width: 20px; text-align: center; }
-  .sidebar-foot {
-    margin-top: auto;
-    font-size: 11px;
-    color: #6b7099;
-    padding: 10px 8px 0;
-  }
+  .sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+  .auth-box { font-size: 12px; color: #9aa1c6; padding: 10px 8px 0; }
+  .auth-box button { all: unset; cursor: pointer; color: #fff; background: rgba(255,255,255,0.08); padding: 8px 10px; border-radius: 8px; font-size: 12.5px; display: block; width: 100%; text-align: left; margin-top: 6px; }
+  .auth-box button:hover { background: rgba(255,255,255,0.15); }
+  .theme-toggle { all: unset; cursor: pointer; color: #cfd3ea; font-size: 12.5px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; gap: 8px; }
+  .theme-toggle:hover { background: rgba(255,255,255,0.1); }
 
   /* ---------- Main ---------- */
   .main { margin-left: 240px; flex: 1; padding: 32px 40px 60px; max-width: 1180px; }
-  .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+  .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
   .topbar h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: -0.01em; }
   .topbar p { margin: 0; color: var(--muted); font-size: 14px; }
 
@@ -97,112 +64,106 @@ if(localStorage.getItem("loggedIn") !== "true"){
   .view.active { display: block; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
 
-  /* ---------- Stat cards ---------- */
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
-  .stat {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px 22px;
-    box-shadow: 0 1px 2px rgba(16,24,40,0.03);
-  }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 28px; }
+  @media (max-width: 1000px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; box-shadow: 0 1px 2px rgba(16,24,40,0.03); }
   .stat .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
-  .stat .value { font-size: 32px; font-weight: 700; margin-top: 6px; }
+  .stat .value { font-size: 30px; font-weight: 700; margin-top: 6px; }
   .stat.indigo .value { color: var(--indigo); }
   .stat.teal .value { color: var(--teal); }
   .stat.ok .value { color: var(--ok); }
+  .stat.amber .value { color: #d97706; }
+  .stat { display: flex; align-items: center; gap: 14px; }
+  .stat .stat-icon { font-size: 22px; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: var(--panel-2); flex-shrink: 0; }
 
-  /* ---------- Cards / panels ---------- */
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+  /* ---------- Dashboard: charts ---------- */
+  .dash-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+  .chart-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .chart-row .chart-label { width: 110px; font-size: 12.5px; color: var(--muted); flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chart-track { flex: 1; background: var(--panel-2); border-radius: 999px; height: 20px; overflow: hidden; position: relative; }
+  .chart-fill { height: 100%; border-radius: 999px; width: 0; transition: width 0.7s cubic-bezier(.2,.9,.3,1); background: linear-gradient(90deg, var(--indigo), var(--teal)); }
+  .chart-value { width: 34px; text-align: right; font-size: 12.5px; font-weight: 700; color: var(--text); flex-shrink: 0; }
+
+  .activity-list { display: flex; flex-direction: column; gap: 4px; max-height: 340px; overflow-y: auto; }
+  .activity-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 4px; border-bottom: 1px solid var(--border); font-size: 13px; animation: fadeUp 0.3s ease backwards; }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-icon { font-size: 15px; width: 28px; height: 28px; border-radius: 8px; background: var(--panel-2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .activity-text { flex: 1; }
+  .activity-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ---------- Responsive layout ---------- */
+  @media (max-width: 760px) {
+    .app { flex-direction: column; }
+    .sidebar { position: static; width: 100%; height: auto; flex-direction: row; align-items: center; padding: 12px 16px; overflow-x: auto; }
+    .brand { padding: 0 12px 0 0; }
+    .nav { flex-direction: row; margin-top: 0; }
+    .nav button { white-space: nowrap; }
+    .sidebar-foot { margin-top: 0; margin-left: auto; flex-direction: row; align-items: center; }
+    .auth-box { padding: 0; }
+    .main { margin-left: 0; padding: 20px 16px 50px; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    form { grid-template-columns: 1fr; }
   }
+
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(16,24,40,0.03); }
   .card h2 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
   .card .hint { font-size: 13px; color: var(--muted); margin: 0 0 18px; }
 
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
-
   form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  form.wide { grid-template-columns: 1fr; }
   label { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 5px; }
-  input {
-    width: 100%;
-    padding: 9px 11px;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    background: var(--panel-2);
-    font-size: 14px;
-    color: var(--text);
-  }
-  input:focus { outline: none; border-color: var(--indigo); background: #fff; box-shadow: 0 0 0 3px rgba(91,91,246,0.12); }
+  input, select { width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel-2); font-size: 14px; color: var(--text); }
+  input:focus, select:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(91,91,246,0.12); }
   .full { grid-column: 1 / -1; }
 
-  button.primary {
-    background: linear-gradient(135deg, var(--indigo), var(--indigo-dark));
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 11px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.08s ease, box-shadow 0.15s ease;
-    box-shadow: 0 4px 12px rgba(91,91,246,0.28);
-  }
+  button.primary { background: linear-gradient(135deg, var(--indigo), var(--indigo-dark)); color: #fff; border: none; border-radius: 10px; padding: 11px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: transform 0.08s ease, box-shadow 0.15s ease; box-shadow: 0 4px 12px rgba(91,91,246,0.28); }
   button.primary:hover { box-shadow: 0 6px 16px rgba(91,91,246,0.4); }
   button.primary:active { transform: scale(0.97); }
-  button.ghost {
-    background: #fff;
-    color: var(--indigo);
-    border: 1px solid var(--indigo);
-    border-radius: 10px;
-    padding: 10px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  button.ghost:hover { background: #f1f0ff; }
+  button.ghost { background: var(--panel); color: var(--indigo); border: 1px solid var(--indigo); border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  button.ghost:hover { background: rgba(91,91,246,0.08); }
+  button.small { border: none; border-radius: 7px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  button.small.edit { background: #eef0ff; color: var(--indigo); }
+  button.small.delete { background: var(--fail-bg); color: var(--fail); }
 
-  /* ---------- Lists ---------- */
-  .entity-list { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
-  .entity-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 14px;
-    background: var(--panel-2);
-    border-radius: 10px;
-    font-size: 13.5px;
-    transition: transform 0.12s ease, background 0.12s ease;
-  }
-  .entity-row:hover { background: #eef0fb; transform: translateX(2px); }
+  .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filters input, .filters select { width: auto; min-width: 140px; }
+
+  .entity-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .entity-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--panel-2); border-radius: 10px; font-size: 13.5px; transition: transform 0.12s ease, background 0.12s ease; gap: 10px; }
+  .entity-row:hover { transform: translateX(2px); }
   .entity-row .name { font-weight: 600; }
   .entity-row .sub { color: var(--muted); font-size: 12px; margin-left: 6px; }
-  .pill {
-    font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
-    background: #eef0ff; color: var(--indigo);
-  }
+  .entity-row .right { display: flex; align-items: center; gap: 8px; }
+  .pill { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: #eef0ff; color: var(--indigo); white-space: nowrap; }
 
-  /* ---------- Eligibility table ---------- */
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 12px 14px; text-align: left; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: top; }
   th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
-  .status {
-    display: inline-block; padding: 4px 11px; border-radius: 999px;
-    font-size: 11.5px; font-weight: 700;
-    animation: pop 0.3s cubic-bezier(.3,1.4,.5,1);
-  }
+  .status { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 700; animation: pop 0.3s cubic-bezier(.3,1.4,.5,1); }
   @keyframes pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .status.ok { background: var(--ok-bg); color: var(--ok); }
   .status.fail { background: var(--fail-bg); color: var(--fail); }
   .reasons { margin: 6px 0 0; padding-left: 16px; font-size: 12px; color: var(--muted); }
-  .reasons li { margin-bottom: 3px; }
   tbody tr { animation: fadeUp 0.25s ease backwards; }
-
   .empty { font-size: 13.5px; color: var(--muted); text-align: center; padding: 30px 0; }
+
+  /* ---------- Login modal ---------- */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(10,12,20,0.55); display: none; align-items: center; justify-content: center; z-index: 100; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: var(--panel); border-radius: 16px; padding: 28px; width: 320px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: fadeUp 0.25s ease; }
+  .modal h3 { margin: 0 0 4px; font-size: 18px; }
+  .modal p { margin: 0 0 18px; font-size: 13px; color: var(--muted); }
+  .modal form { grid-template-columns: 1fr; gap: 10px; }
+  .modal .actions { display: flex; gap: 10px; margin-top: 6px; }
+  .modal .actions button.ghost { flex: 1; }
+  .modal .actions button.primary { flex: 1; }
+
+  /* ---------- Toasts ---------- */
+  .toast-wrap { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 200; }
+  .toast { background: var(--text); color: var(--bg); padding: 12px 16px; border-radius: 10px; font-size: 13.5px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); animation: toastIn 0.25s ease; max-width: 280px; }
+  .toast.error { background: #7f1d1d; color: #fff; }
+  .toast.success { background: #14532d; color: #fff; }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
 </style>
 </head>
 <body>
@@ -216,7 +177,10 @@ if(localStorage.getItem("loggedIn") !== "true"){
       <button class="nav-btn" data-view="companies"><span class="icon">▣</span> Companies</button>
       <button class="nav-btn" data-view="eligibility"><span class="icon">✓</span> Eligibility Check</button>
     </div>
-    <div class="sidebar-foot">Plain Java backend &middot; no framework</div>
+    <div class="sidebar-foot">
+      <button class="theme-toggle" id="themeToggle">🌙 <span id="themeLabel">Dark mode</span></button>
+      <div class="auth-box" id="authBox">Checking session...</div>
+    </div>
   </div>
 
   <div class="main">
@@ -224,16 +188,35 @@ if(localStorage.getItem("loggedIn") !== "true"){
     <!-- Dashboard -->
     <div class="view active" id="view-dashboard">
       <div class="topbar">
-        <div>
-          <h1>Dashboard</h1>
-          <p>Overview of registered students, companies, and eligibility outcomes.</p>
-        </div>
+        <div><h1>Dashboard</h1><p>Overview of registered students, companies, and eligibility outcomes.</p></div>
       </div>
       <div class="stats">
-        <div class="stat indigo"><div class="label">Students</div><div class="value" id="statStudents">0</div></div>
-        <div class="stat teal"><div class="label">Companies</div><div class="value" id="statCompanies">0</div></div>
-        <div class="stat ok"><div class="label">Eligible Matches</div><div class="value" id="statEligible">0</div></div>
+        <div class="stat indigo"><span class="stat-icon">🎓</span><div><div class="label">Students</div><div class="value" id="statStudents">0</div></div></div>
+        <div class="stat teal"><span class="stat-icon">🏢</span><div><div class="label">Companies</div><div class="value" id="statCompanies">0</div></div></div>
+        <div class="stat ok"><span class="stat-icon">✅</span><div><div class="label">Eligible Matches</div><div class="value" id="statEligible">0</div></div></div>
+        <div class="stat amber"><span class="stat-icon">📊</span><div><div class="label">Avg CGPA</div><div class="value" id="statAvgCgpa">0</div></div></div>
       </div>
+
+      <div class="dash-grid">
+        <div>
+          <div class="card">
+            <h2>Branch-wise student distribution</h2>
+            <p class="hint">How many registered students belong to each branch.</p>
+            <div id="branchChart"><div class="empty">No students yet.</div></div>
+          </div>
+          <div class="card">
+            <h2>Company-wise eligible students</h2>
+            <p class="hint">How many students currently qualify for each company.</p>
+            <div id="companyChart"><div class="empty">No companies yet.</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Recent activity</h2>
+          <p class="hint">Latest changes across the system.</p>
+          <div class="activity-list" id="activityList"><div class="empty">No activity yet.</div></div>
+        </div>
+      </div>
+
       <div class="card">
         <h2>Quick actions</h2>
         <p class="hint">Jump straight to a task.</p>
@@ -247,16 +230,12 @@ if(localStorage.getItem("loggedIn") !== "true"){
 
     <!-- Students -->
     <div class="view" id="view-students">
-      <div class="topbar">
-        <div>
-          <h1>Students</h1>
-          <p>Register students and review their academic records.</p>
-        </div>
-      </div>
+      <div class="topbar"><div><h1>Students</h1><p>Register students and review their academic records.</p></div></div>
       <div class="card">
-        <h2>Register a student</h2>
-        <p class="hint">All fields required.</p>
+        <h2 id="studentFormTitle">Register a student</h2>
+        <p class="hint">All fields required. Log in to add, edit, or delete.</p>
         <form id="studentForm">
+          <input type="hidden" name="editingId" value="" />
           <div><label>Name</label><input name="name" required /></div>
           <div><label>Branch</label><input name="branch" placeholder="CSE" required /></div>
           <div><label>CGPA</label><input name="cgpa" type="number" step="0.01" required /></div>
@@ -264,27 +243,31 @@ if(localStorage.getItem("loggedIn") !== "true"){
           <div><label>Gap Years</label><input name="gapYears" type="number" step="0.5" value="0" required /></div>
           <div><label>10th %</label><input name="tenthPercent" type="number" step="0.1" required /></div>
           <div class="full"><label>12th %</label><input name="twelfthPercent" type="number" step="0.1" required /></div>
-          <div class="full"><button class="primary" type="submit">Add Student</button></div>
+          <div class="full" style="display:flex; gap:10px;">
+            <button class="primary" type="submit" id="studentSubmitBtn">Add Student</button>
+            <button class="ghost" type="button" id="studentCancelEdit" style="display:none;">Cancel</button>
+          </div>
         </form>
       </div>
       <div class="card">
         <h2>All students</h2>
+        <div class="filters">
+          <input id="studentSearch" placeholder="Search by name or branch..." />
+          <select id="studentBranchFilter"><option value="">All branches</option></select>
+          <input id="studentMinCgpaFilter" type="number" step="0.1" placeholder="Min CGPA" />
+        </div>
         <div class="entity-list" id="studentList"></div>
       </div>
     </div>
 
     <!-- Companies -->
     <div class="view" id="view-companies">
-      <div class="topbar">
-        <div>
-          <h1>Companies</h1>
-          <p>Register companies and their eligibility criteria.</p>
-        </div>
-      </div>
+      <div class="topbar"><div><h1>Companies</h1><p>Register companies and their eligibility criteria.</p></div></div>
       <div class="card">
-        <h2>Register a company</h2>
-        <p class="hint">Use "ANY" for allowed branches, or separate with | (e.g. CSE|IT).</p>
+        <h2 id="companyFormTitle">Register a company</h2>
+        <p class="hint">Use "ANY" for allowed branches, or separate with | (e.g. CSE|IT). Log in to add, edit, or delete.</p>
         <form id="companyForm">
+          <input type="hidden" name="editingId" value="" />
           <div class="full"><label>Company Name</label><input name="name" required /></div>
           <div><label>Min CGPA</label><input name="minCgpa" type="number" step="0.01" required /></div>
           <div><label>Max Backlogs</label><input name="maxBacklogs" type="number" value="0" required /></div>
@@ -292,11 +275,17 @@ if(localStorage.getItem("loggedIn") !== "true"){
           <div><label>Allowed Branches</label><input name="allowedBranches" value="ANY" required /></div>
           <div><label>Min 10th %</label><input name="minTenthPercent" type="number" step="0.1" required /></div>
           <div class="full"><label>Min 12th %</label><input name="minTwelfthPercent" type="number" step="0.1" required /></div>
-          <div class="full"><button class="primary" type="submit">Add Company</button></div>
+          <div class="full" style="display:flex; gap:10px;">
+            <button class="primary" type="submit" id="companySubmitBtn">Add Company</button>
+            <button class="ghost" type="button" id="companyCancelEdit" style="display:none;">Cancel</button>
+          </div>
         </form>
       </div>
       <div class="card">
         <h2>All companies</h2>
+        <div class="filters">
+          <input id="companySearch" placeholder="Search by company name..." />
+        </div>
         <div class="entity-list" id="companyList"></div>
       </div>
     </div>
@@ -304,91 +293,362 @@ if(localStorage.getItem("loggedIn") !== "true"){
     <!-- Eligibility -->
     <div class="view" id="view-eligibility">
       <div class="topbar">
-        <div>
-          <h1>Eligibility Check</h1>
-          <p>Cross-check every student against every company's criteria.</p>
+        <div><h1>Eligibility Check</h1><p>Cross-check every student against every company's criteria.</p></div>
+        <div style="display:flex; gap:10px;">
+          <button class="ghost" id="exportCsv">Export Eligible (CSV)</button>
+          <button class="primary" id="runCheck">Run Eligibility Check</button>
         </div>
-        <button class="primary" id="runCheck">Run Eligibility Check</button>
       </div>
-      <div class="card" id="matrixWrap">
-        <div class="empty">Click "Run Eligibility Check" to see results.</div>
-      </div>
+      <div class="card" id="matrixWrap"><div class="empty">Click "Run Eligibility Check" to see results.</div></div>
     </div>
 
   </div>
 </div>
 
+<!-- Login modal -->
+<div class="modal-overlay" id="loginOverlay">
+  <div class="modal">
+    <h3>Admin Login</h3>
+    <p>Log in to add, edit, or delete records.</p>
+    <form id="loginForm">
+      <div><label>Username</label><input name="username" required /></div>
+      <div><label>Password</label><input name="password" type="password" required /></div>
+      <div class="actions">
+        <button type="button" class="ghost" id="loginCancel">Cancel</button>
+        <button type="submit" class="primary">Log In</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
 <script>
 const API = '';
+let isAuthenticated = false;
+let allStudents = [];
+let allCompanies = [];
+
+// ---- Toasts ----
+function showToast(message, type) {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.textContent = message;
+  wrap.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 2800);
+}
+
+// ---- Theme ----
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+  document.getElementById('themeToggle').firstChild.textContent = theme === 'dark' ? '☀️ ' : '🌙 ';
+  localStorage.setItem('placementHubTheme', theme);
+}
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+});
+applyTheme(localStorage.getItem('placementHubTheme') || 'light');
 
 // ---- Navigation ----
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => goTo(btn.dataset.view));
-});
+document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => goTo(btn.dataset.view)));
 function goTo(view) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  if (view === 'dashboard') loadDashboard();
+}
+
+// ---- Dashboard: stats, charts, activity ----
+function animateCount(el, target) {
+  const start = parseFloat(el.textContent) || 0;
+  const duration = 500;
+  const startTime = performance.now();
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const value = start + (target - start) * progress;
+    el.textContent = Number.isInteger(target) ? Math.round(value) : value.toFixed(2);
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderBarChart(containerId, items, labelKey, valueKey) {
+  const el = document.getElementById(containerId);
+  if (!items.length) { el.innerHTML = '<div class="empty">No data yet.</div>'; return; }
+  const max = Math.max(...items.map(i => i[valueKey]), 1);
+  el.innerHTML = items.map(item => `
+    <div class="chart-row">
+      <div class="chart-label" title="${item[labelKey]}">${item[labelKey]}</div>
+      <div class="chart-track"><div class="chart-fill" data-width="${(item[valueKey] / max) * 100}"></div></div>
+      <div class="chart-value">${item[valueKey]}</div>
+    </div>
+  `).join('');
+  // animate fills in on next frame
+  requestAnimationFrame(() => {
+    el.querySelectorAll('.chart-fill').forEach(bar => { bar.style.width = bar.dataset.width + '%'; });
+  });
+}
+
+function timeAgo(timestamp) {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return minutes + 'm ago';
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return hours + 'h ago';
+  return Math.floor(hours / 24) + 'd ago';
+}
+
+async function loadDashboard() {
+  const res = await fetch(API + '/api/dashboard-stats');
+  const stats = await res.json();
+  animateCount(document.getElementById('statStudents'), stats.totalStudents);
+  animateCount(document.getElementById('statCompanies'), stats.totalCompanies);
+  animateCount(document.getElementById('statEligible'), stats.totalEligible);
+  animateCount(document.getElementById('statAvgCgpa'), parseFloat(stats.avgCgpa));
+  renderBarChart('branchChart', stats.branchDistribution, 'branch', 'count');
+  renderBarChart('companyChart', stats.companyEligibleCounts, 'company', 'count');
+
+  const actRes = await fetch(API + '/api/activity');
+  const activity = await actRes.json();
+  const list = document.getElementById('activityList');
+  list.innerHTML = activity.length ? activity.map((a, i) => `
+    <div class="activity-item" style="animation-delay:${Math.min(i * 40, 400)}ms">
+      <span class="activity-icon">${a.icon}</span>
+      <div class="activity-text">${a.message}<div class="activity-time">${timeAgo(a.timestamp)}</div></div>
+    </div>
+  `).join('') : '<div class="empty">No activity yet.</div>';
+}
+
+// ---- Auth ----
+async function checkSession() {
+  const res = await fetch(API + '/api/session');
+  const data = await res.json();
+  isAuthenticated = data.authenticated;
+  renderAuthBox();
+}
+function renderAuthBox() {
+  const box = document.getElementById('authBox');
+  if (isAuthenticated) {
+    box.innerHTML = '<span>Logged in as admin</span><button id="logoutBtn">Log Out</button>';
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+  } else {
+    box.innerHTML = '<button id="loginBtn">🔒 Admin Login</button>';
+    document.getElementById('loginBtn').addEventListener('click', openLogin);
+  }
+}
+function openLogin() { document.getElementById('loginOverlay').classList.add('active'); }
+function closeLogin() { document.getElementById('loginOverlay').classList.remove('active'); }
+document.getElementById('loginCancel').addEventListener('click', closeLogin);
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const body = Object.fromEntries(new FormData(e.target).entries());
+  const res = await fetch(API + '/api/login', { method: 'POST', body: JSON.stringify(body) });
+  if (res.ok) {
+    isAuthenticated = true;
+    renderAuthBox();
+    closeLogin();
+    e.target.reset();
+    showToast('Logged in successfully', 'success');
+  } else {
+    showToast('Invalid username or password', 'error');
+  }
+});
+async function logout() {
+  await fetch(API + '/api/logout', { method: 'POST' });
+  isAuthenticated = false;
+  renderAuthBox();
+  showToast('Logged out', 'success');
+}
+function requireLoginOrToast() {
+  if (!isAuthenticated) {
+    showToast('Please log in first', 'error');
+    openLogin();
+    return false;
+  }
+  return true;
 }
 
 // ---- Data loading ----
 async function loadStudents() {
   const res = await fetch(API + '/api/students');
-  const data = await res.json();
-  document.getElementById('statStudents').textContent = data.length;
+  allStudents = await res.json();
+  document.getElementById('statStudents').textContent = allStudents.length;
+  const avg = allStudents.length ? (allStudents.reduce((s, x) => s + x.cgpa, 0) / allStudents.length).toFixed(2) : '0';
+  document.getElementById('statAvgCgpa').textContent = avg;
+  const branchFilter = document.getElementById('studentBranchFilter');
+  const branches = [...new Set(allStudents.map(s => s.branch))].sort();
+  branchFilter.innerHTML = '<option value="">All branches</option>' + branches.map(b => `<option value="${b}">${b}</option>`).join('');
+  renderStudentList();
+}
+
+function renderStudentList() {
+  const search = document.getElementById('studentSearch').value.toLowerCase();
+  const branch = document.getElementById('studentBranchFilter').value;
+  const minCgpa = parseFloat(document.getElementById('studentMinCgpaFilter').value) || 0;
+  const filtered = allStudents.filter(s =>
+    (s.name.toLowerCase().includes(search) || s.branch.toLowerCase().includes(search)) &&
+    (!branch || s.branch === branch) &&
+    (s.cgpa >= minCgpa)
+  );
   const el = document.getElementById('studentList');
-  el.innerHTML = data.map(s => `
+  el.innerHTML = filtered.map(s => `
     <div class="entity-row">
       <span><span class="name">${s.name}</span><span class="sub">${s.branch}</span></span>
-      <span class="pill">CGPA ${s.cgpa}</span>
+      <span class="right">
+        <span class="pill">CGPA ${s.cgpa}</span>
+        <button class="small edit" onclick="editStudent('${s.id}')">Edit</button>
+        <button class="small delete" onclick="deleteStudent('${s.id}')">Delete</button>
+      </span>
     </div>
-  `).join('') || '<div class="empty">No students yet.</div>';
-  return data;
+  `).join('') || '<div class="empty">No students match.</div>';
 }
+['studentSearch', 'studentBranchFilter', 'studentMinCgpaFilter'].forEach(id =>
+  document.getElementById(id).addEventListener('input', renderStudentList)
+);
 
 async function loadCompanies() {
   const res = await fetch(API + '/api/companies');
-  const data = await res.json();
-  document.getElementById('statCompanies').textContent = data.length;
+  allCompanies = await res.json();
+  document.getElementById('statCompanies').textContent = allCompanies.length;
+  renderCompanyList();
+}
+function renderCompanyList() {
+  const search = document.getElementById('companySearch').value.toLowerCase();
+  const filtered = allCompanies.filter(c => c.name.toLowerCase().includes(search));
   const el = document.getElementById('companyList');
-  el.innerHTML = data.map(c => `
+  el.innerHTML = filtered.map(c => `
     <div class="entity-row">
       <span class="name">${c.name}</span>
-      <span class="pill">min CGPA ${c.minCgpa}</span>
+      <span class="right">
+        <span class="pill">min CGPA ${c.minCgpa}</span>
+        <button class="small edit" onclick="editCompany('${c.id}')">Edit</button>
+        <button class="small delete" onclick="deleteCompany('${c.id}')">Delete</button>
+      </span>
     </div>
-  `).join('') || '<div class="empty">No companies yet.</div>';
-  return data;
+  `).join('') || '<div class="empty">No companies match.</div>';
+}
+document.getElementById('companySearch').addEventListener('input', renderCompanyList);
+
+// ---- Student form (add / edit) ----
+const studentForm = document.getElementById('studentForm');
+studentForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!requireLoginOrToast()) return;
+  const body = Object.fromEntries(new FormData(studentForm).entries());
+  const editingId = body.editingId;
+  delete body.editingId;
+  const url = editingId ? API + '/api/students?id=' + editingId : API + '/api/students';
+  const method = editingId ? 'PUT' : 'POST';
+  const res = await fetch(url, { method, body: JSON.stringify(body) });
+  if (res.ok) {
+    showToast(editingId ? 'Student updated' : 'Student added', 'success');
+    resetStudentForm();
+    loadStudents();
+    loadDashboard();
+  } else {
+    const err = await res.json().catch(() => ({}));
+    showToast(err.error || 'Something went wrong', 'error');
+  }
+});
+function editStudent(id) {
+  const s = allStudents.find(x => x.id === id);
+  if (!s) return;
+  studentForm.name.value = s.name;
+  studentForm.branch.value = s.branch;
+  studentForm.cgpa.value = s.cgpa;
+  studentForm.activeBacklogs.value = s.activeBacklogs;
+  studentForm.gapYears.value = s.gapYears;
+  studentForm.tenthPercent.value = s.tenthPercent;
+  studentForm.twelfthPercent.value = s.twelfthPercent;
+  studentForm.editingId.value = id;
+  document.getElementById('studentFormTitle').textContent = 'Edit student';
+  document.getElementById('studentSubmitBtn').textContent = 'Update Student';
+  document.getElementById('studentCancelEdit').style.display = 'inline-block';
+  goTo('students');
+  window.scrollTo(0, 0);
+}
+function resetStudentForm() {
+  studentForm.reset();
+  studentForm.editingId.value = '';
+  document.getElementById('studentFormTitle').textContent = 'Register a student';
+  document.getElementById('studentSubmitBtn').textContent = 'Add Student';
+  document.getElementById('studentCancelEdit').style.display = 'none';
+}
+document.getElementById('studentCancelEdit').addEventListener('click', resetStudentForm);
+async function deleteStudent(id) {
+  if (!requireLoginOrToast()) return;
+  if (!confirm('Delete this student? This cannot be undone.')) return;
+  const res = await fetch(API + '/api/students?id=' + id, { method: 'DELETE' });
+  if (res.ok) { showToast('Student deleted', 'success'); loadStudents(); loadDashboard(); }
+  else { showToast('Could not delete student', 'error'); }
 }
 
-document.getElementById('studentForm').addEventListener('submit', async (e) => {
+// ---- Company form (add / edit) ----
+const companyForm = document.getElementById('companyForm');
+companyForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const form = e.target;
-  const body = Object.fromEntries(new FormData(form).entries());
-  await fetch(API + '/api/students', { method: 'POST', body: JSON.stringify(body) });
-  form.reset();
-  loadStudents();
+  if (!requireLoginOrToast()) return;
+  const body = Object.fromEntries(new FormData(companyForm).entries());
+  const editingId = body.editingId;
+  delete body.editingId;
+  const url = editingId ? API + '/api/companies?id=' + editingId : API + '/api/companies';
+  const method = editingId ? 'PUT' : 'POST';
+  const res = await fetch(url, { method, body: JSON.stringify(body) });
+  if (res.ok) {
+    showToast(editingId ? 'Company updated' : 'Company added', 'success');
+    resetCompanyForm();
+    loadCompanies();
+    loadDashboard();
+  } else {
+    const err = await res.json().catch(() => ({}));
+    showToast(err.error || 'Something went wrong', 'error');
+  }
 });
+function editCompany(id) {
+  const c = allCompanies.find(x => x.id === id);
+  if (!c) return;
+  companyForm.name.value = c.name;
+  companyForm.minCgpa.value = c.minCgpa;
+  companyForm.maxBacklogs.value = c.maxBacklogs;
+  companyForm.maxGapYears.value = c.maxGapYears;
+  companyForm.allowedBranches.value = c.allowedBranches.join('|');
+  companyForm.minTenthPercent.value = c.minTenthPercent;
+  companyForm.minTwelfthPercent.value = c.minTwelfthPercent;
+  companyForm.editingId.value = id;
+  document.getElementById('companyFormTitle').textContent = 'Edit company';
+  document.getElementById('companySubmitBtn').textContent = 'Update Company';
+  document.getElementById('companyCancelEdit').style.display = 'inline-block';
+  goTo('companies');
+  window.scrollTo(0, 0);
+}
+function resetCompanyForm() {
+  companyForm.reset();
+  companyForm.editingId.value = '';
+  companyForm.allowedBranches.value = 'ANY';
+  document.getElementById('companyFormTitle').textContent = 'Register a company';
+  document.getElementById('companySubmitBtn').textContent = 'Add Company';
+  document.getElementById('companyCancelEdit').style.display = 'none';
+}
+document.getElementById('companyCancelEdit').addEventListener('click', resetCompanyForm);
+async function deleteCompany(id) {
+  if (!requireLoginOrToast()) return;
+  if (!confirm('Delete this company? This cannot be undone.')) return;
+  const res = await fetch(API + '/api/companies?id=' + id, { method: 'DELETE' });
+  if (res.ok) { showToast('Company deleted', 'success'); loadCompanies(); loadDashboard(); }
+  else { showToast('Could not delete company', 'error'); }
+}
 
-document.getElementById('companyForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const body = Object.fromEntries(new FormData(form).entries());
-  await fetch(API + '/api/companies', { method: 'POST', body: JSON.stringify(body) });
-  form.reset();
-  document.querySelector('[name=allowedBranches]').value = 'ANY';
-  loadCompanies();
-});
-
+// ---- Eligibility check ----
 document.getElementById('runCheck').addEventListener('click', async () => {
   const res = await fetch(API + '/api/check-all');
   const data = await res.json();
   const wrap = document.getElementById('matrixWrap');
   const eligibleCount = data.filter(r => r.eligible).length;
   document.getElementById('statEligible').textContent = eligibleCount;
-
-  if (data.length === 0) {
-    wrap.innerHTML = '<div class="empty">No students or companies registered yet.</div>';
-    return;
-  }
+  if (data.length === 0) { wrap.innerHTML = '<div class="empty">No students or companies registered yet.</div>'; return; }
   const rows = data.map((r, i) => `
     <tr style="animation-delay:${Math.min(i * 30, 500)}ms">
       <td>${r.studentName}</td>
@@ -397,16 +657,17 @@ document.getElementById('runCheck').addEventListener('click', async () => {
       <td>${r.reasons.length ? '<ul class="reasons">' + r.reasons.map(x => `<li>${x}</li>`).join('') + '</ul>' : '&mdash;'}</td>
     </tr>
   `).join('');
-  wrap.innerHTML = `
-    <table>
-      <thead><tr><th>Student</th><th>Company</th><th>Status</th><th>Reasons</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  `;
+  wrap.innerHTML = `<table><thead><tr><th>Student</th><th>Company</th><th>Status</th><th>Reasons</th></tr></thead><tbody>${rows}</tbody></table>`;
+  loadDashboard();
+});
+document.getElementById('exportCsv').addEventListener('click', () => {
+  window.location.href = API + '/api/export/eligible';
 });
 
+checkSession();
 loadStudents();
 loadCompanies();
+loadDashboard();
 </script>
 
 </body>

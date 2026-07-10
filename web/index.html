@@ -401,26 +401,35 @@ function timeAgo(timestamp) {
   if (hours < 24) return hours + 'h ago';
   return Math.floor(hours / 24) + 'd ago';
 }
-
 async function loadDashboard() {
-  const res = await fetch(API + '/api/dashboard-stats');
-  const stats = await res.json();
-  animateCount(document.getElementById('statStudents'), stats.totalStudents);
-  animateCount(document.getElementById('statCompanies'), stats.totalCompanies);
-  animateCount(document.getElementById('statEligible'), stats.totalEligible);
-  animateCount(document.getElementById('statAvgCgpa'), parseFloat(stats.avgCgpa));
-  renderBarChart('branchChart', stats.branchDistribution, 'branch', 'count');
-  renderBarChart('companyChart', stats.companyEligibleCounts, 'company', 'count');
-
-  const actRes = await fetch(API + '/api/activity');
-  const activity = await actRes.json();
-  const list = document.getElementById('activityList');
-  list.innerHTML = activity.length ? activity.map((a, i) => `
-    <div class="activity-item" style="animation-delay:${Math.min(i * 40, 400)}ms">
-      <span class="activity-icon">${a.icon}</span>
-      <div class="activity-text">${a.message}<div class="activity-time">${timeAgo(a.timestamp)}</div></div>
-    </div>
-  `).join('') : '<div class="empty">No activity yet.</div>';
+  try {
+    const res = await fetch(API + '/api/dashboard-stats');
+    const stats = await res.json();
+    
+    // Force numbers with a fallback to 0 to prevent NaN propagation
+    animateCount(document.getElementById('statStudents'), parseInt(stats.totalStudents) || 0);
+    animateCount(document.getElementById('statCompanies'), parseInt(stats.totalCompanies) || 0);
+    animateCount(document.getElementById('statEligible'), parseInt(stats.totalEligible) || 0);
+    animateCount(document.getElementById('statAvgCgpa'), parseFloat(stats.avgCgpa) || 0);
+    
+    renderBarChart('branchChart', stats.branchDistribution || [], 'branch', 'count');
+    renderBarChart('companyChart', stats.companyEligibleCounts || [], 'company', 'count');
+    
+    const actRes = await fetch(API + '/api/activity');
+    const activity = await actRes.json();
+    const list = document.getElementById('activityList');
+    
+    list.innerHTML = activity && activity.length ? activity.map((a, i) => `
+        <div class="activity-item" style="animation-delay:${Math.min(i * 40, 400)}ms">
+            <span class="activity-icon">${a.icon || '📝'}</span>
+            <div class="activity-text">${a.message}<div class="activity-time">${timeAgo(a.timestamp)}</div></div>
+        </div>
+    `).join('') : '<div class="empty">No activity yet.</div>';
+    
+  } catch (err) {
+    console.error("Dashboard failed to load:", err);
+    showToast('Failed to load dashboard statistics', 'error');
+  }
 }
 
 // ---- Auth ----

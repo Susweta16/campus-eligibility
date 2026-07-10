@@ -39,6 +39,7 @@ public class Server {
         server.createContext("/api/import/students", Server::handleImportStudents);
         server.createContext("/api/check-all", Server::handleCheckAll);
         server.createContext("/api/check", Server::handleCheckOne);
+        server.createContext("/api/login", Server::handleLogin);
         server.createContext("/", Server::handleStatic);
 
         server.setExecutor(null);
@@ -256,6 +257,29 @@ public class Server {
         sendJson(ex, 201, json);
     }
 
+    // ---------- /api/login ----------
+    // NOTE: credentials are hardcoded here for simplicity. For anything beyond
+    // a personal/demo project, replace this with a real user store + hashed passwords.
+    static final String ADMIN_USER = "admin";
+    static final String ADMIN_PASS = "admin123";
+
+    static void handleLogin(HttpExchange ex) throws IOException {
+        cors(ex);
+        if (!ex.getRequestMethod().equals("POST")) {
+            sendJson(ex, 405, "{\"error\":\"method not allowed\"}");
+            return;
+        }
+        Map<String, String> body = JsonUtil.parseFlatObject(readBody(ex));
+        String user = body.getOrDefault("username", "");
+        String pass = body.getOrDefault("password", "");
+
+        if (ADMIN_USER.equals(user) && ADMIN_PASS.equals(pass)) {
+            sendJson(ex, 200, "{\"ok\":true}");
+        } else {
+            sendJson(ex, 200, "{\"ok\":false,\"error\":\"Invalid username or password\"}");
+        }
+    }
+
     // ---------- /api/check?studentId=&companyId= ----------
     static void handleCheckOne(HttpExchange ex) throws IOException {
         cors(ex);
@@ -322,18 +346,4 @@ public class Server {
     }
 
     static Map<String, String> queryParams(HttpExchange ex) {
-        Map<String, String> result = new HashMap<>();
-        String query = ex.getRequestURI().getRawQuery();
-        if (query == null) return result;
-        for (String pair : query.split("&")) {
-            int idx = pair.indexOf('=');
-            if (idx < 0) continue;
-            try {
-                String key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
-                String value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
-                result.put(key, value);
-            } catch (Exception ignored) { }
-        }
-        return result;
-    }
-}
+        Map<String, String> result = new

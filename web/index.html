@@ -1,3 +1,23 @@
+<script>
+    // 1. Check if the token exists locally (if using localStorage tokens)
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+        window.location.href = "login.html";
+    }
+
+    // 2. (Optional but Recommended) Validate the token with the server
+    window.addEventListener('DOMContentLoaded', async () => {
+        const verify = await fetch("/api/verify-session", {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        
+        if (!verify.ok) {
+            // Token is invalid or expired
+            localStorage.removeItem("authToken");
+            window.location.href = "login.html";
+        }
+    });
+</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>

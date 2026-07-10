@@ -72,7 +72,7 @@ public class Server {
             saveCompaniesToDisk();
         }
     }
-    static void handleDashboardStats(HttpExchange ex) throws IOException {
+  static void handleDashboardStats(HttpExchange ex) throws IOException {
         cors(ex);
         if (!ex.getRequestMethod().equals("GET")) {
             sendJson(ex, 405, "{\"error\":\"method not allowed\"}");
@@ -82,6 +82,7 @@ public class Server {
         int totalStudents = students.size();
         int totalCompanies = companies.size();
         
+        // 1. Calculate average CGPA
         double avgCgpa = 0.0;
         if (totalStudents > 0) {
             double sum = 0;
@@ -91,6 +92,7 @@ public class Server {
             avgCgpa = sum / totalStudents;
         }
 
+        // 2. Count total eligible pairs
         int totalEligible = 0;
         for (Student s : students.values()) {
             for (Company c : companies.values()) {
@@ -100,10 +102,41 @@ public class Server {
             }
         }
 
+        // 3. Build Branch Distribution Map & JSON
+        Map<String, Integer> branchMap = new HashMap<>();
+        for (Student s : students.values()) {
+            String b = s.branch != null ? s.branch : "UNKNOWN";
+            branchMap.put(b, branchMap.getOrDefault(b, 0) + 1);
+        }
+        List<String> branchList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : branchMap.entrySet()) {
+            branchList.add(String.format("{\"branch\":\"%s\",\"count\":%d}", JsonUtil.esc(entry.getKey()), entry.getValue()));
+        }
+        String branchDistributionJson = "[" + String.join(",", branchList) + "]";
+
+        // 4. Build Company Eligibility Matches Map & JSON
+        Map<String, Integer> companyMap = new HashMap<>();
+        for (Company c : companies.values()) {
+            int matchCount = 0;
+            for (Student s : students.values()) {
+                if (engine.evaluate(s, c).eligible) {
+                    matchCount++;
+                }
+            }
+            companyMap.put(c.name, matchCount);
+        }
+        List<String> companyList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : companyMap.entrySet()) {
+            companyList.add(String.format("{\"company\":\"%s\",\"count\":%d}", JsonUtil.esc(entry.getKey()), entry.getValue()));
+        }
+        String companyEligibleJson = "[" + String.join(",", companyList) + "]";
+
+        // 5. Combine everything into the final JSON payload
         String json = String.format(
             "{\"totalStudents\":%d,\"totalCompanies\":%d,\"totalEligible\":%d,\"avgCgpa\":%.2f," +
-            "\"branchDistribution\":[],\"companyEligibleCounts\":[]}",
-            totalStudents, totalCompanies, totalEligible, avgCgpa
+            "\"branchDistribution\":%s,\"companyEligibleCounts\":%s}",
+            totalStudents, totalCompanies, totalEligible, avgCgpa,
+            branchDistributionJson, companyEligibleJson
         );
 
         sendJson(ex, 200, json);

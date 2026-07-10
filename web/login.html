@@ -86,8 +86,9 @@ async function login() {
     const data = await res.json();
 
     if (data.ok) {
-        window.location.href = "index.html";
-    } else {
+    localStorage.setItem("loggedIn", "true");
+    window.location.href = "index.html";
+} else {
         document.getElementById("msg").innerHTML =
             data.error || "Invalid username or password";
     }

@@ -85,8 +85,13 @@ async function login() {
 
     const data = await res.json();
 
-    if (data.ok) {
-    localStorage.setItem("loggedIn", "true");
+  if (data.ok) {
+    // If your backend returns a token in the JSON response:
+    if (data.token) {
+        localStorage.setItem("authToken", data.token); 
+    }
+    
+    // Redirect to the dashboard
     window.location.href = "index.html";
 } else {
         document.getElementById("msg").innerHTML =
